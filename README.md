@@ -4,6 +4,9 @@ this mod fixes mouse input in Outer Wilds. i have no idea how this doesn't alrea
 
 ### explanation:
 
-vertical mouse input is read every game frame by the camera controller, and horizontal mouse input is read every physics frame (which != game frame) by the character controller directly for turning. by default physics updates at a fixed rate of 60Hz, so your horizontal mouse movement would not be smooth when playing on a high refresh-rate monitor unless you raised the physics rate via secretsettings.txt. it also calculated sensitivity differently from the camera controller, so increasing your game physics rate would make this sensitivity discrepancy worse.
+normally, handling of the vertical & horizontal mouse axes is split between the camera & character controllers respectively unless you're in ship free look, in which case the camera controller handles both axes. the physics rate is 60Hz by default, so your mouse movement would not be smooth when playing on a high refresh-rate monitor unless you raised the physics rate via secretsettings.txt. horizontal sensitivity was also calculated differently, making it worse.
 
-both axes are handled by the camera controller as it should be, but only in ship free look. this mod makes it so that both axes are always handled by the camera controller, and every physics frame the camera removes its horizontal rotation and transfers it to the character controller.
+this mod makes it so:
+* the camera controller handles mouse input every frame instead of every physics tick
+* the camera controller now always handles horizontal mouse input even when not in ship free look
+* every physics tick, the camera removes its horizontal rotation and transfers it to the character controller
