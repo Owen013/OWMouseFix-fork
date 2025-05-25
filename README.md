@@ -12,5 +12,5 @@ this mod makes it so:
 * the camera controller handles mouse input every frame instead of every physics tick
 * the camera controller now always handles X mouse input even when not in ship free look
 * the camera controller now clamps pitch to nearly -90 ⇔ 90, instead of -80 ⇔ 80
-* every physics tick, the camera removes its horizontal rotation and transfers it to the character controller
+* every physics tick, the camera transfers its horizontal rotation to the character controller
 * mouse input smoothing is now disabled
