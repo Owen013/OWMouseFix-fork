@@ -1,4 +1,4 @@
-# Outer Wilds Mouse Fix
+![image](https://github.com/user-attachments/assets/a3af1d3f-f576-417b-89b4-7e0db5e77dc1)
 
 this mod fixes mouse input in Outer Wilds. i have no idea how this doesn't already exist, this game came out six years ago. yall have just been living like this?
 
