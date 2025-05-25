@@ -47,7 +47,7 @@ public class MouseFixPatches {
         vector *= __instance._playerCamera.fieldOfView / __instance._initFOV;
         if (Time.timeScale > 1f)
             vector /= Time.timeScale;
-        float num = InputUtil.IsMouseMoveAxis(InputLibrary.look.AxisID) ? deltaTime : 0.01666667f;
+        float num = InputUtil.IsMouseMoveAxis(InputLibrary.look.AxisID) ? 0.01666667f : deltaTime;
         float lookRate = OWInput.UsingGamepad() ? PlayerCameraController.GAMEPAD_LOOK_RATE_Y : PlayerCameraController.LOOK_RATE;
         __instance._degreesX += OWInput.GetAxisValue(InputLibrary.look, InputMode.All).x * lookRate * vector.x * num;
     }
