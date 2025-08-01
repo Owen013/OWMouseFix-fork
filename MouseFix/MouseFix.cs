@@ -95,6 +95,7 @@ public class MouseFixPatches {
         } else {
             __instance._baseAngularVelocity *= 0.995f;
         }
+        Locator.GetPlayerCameraController()._degreesX += __instance._baseAngularVelocity * 180f / 3.1415927f * Time.fixedDeltaTime;
         return false;
     }
 
