@@ -69,7 +69,7 @@ public class MouseFixPatches {
         __instance._rotationX = Quaternion.AngleAxis(__instance._degreesX, Vector3.up);
         __instance._rotationY = Quaternion.AngleAxis(__instance._degreesY, -Vector3.right);
         Quaternion quaternion;
-        if (freeLook || !Time.inFixedTimeStep)
+        if (freeLook || !Time.inFixedTimeStep || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()))
             quaternion = __instance._rotationX * __instance._rotationY * Quaternion.identity;
         else {
             quaternion = __instance._rotationY * Quaternion.identity;
