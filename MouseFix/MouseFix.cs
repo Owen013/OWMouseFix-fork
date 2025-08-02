@@ -38,7 +38,7 @@ public class MouseFixPatches {
         // same as vanilla UpdateInput code but this time we're doing degreesX all da time
         bool freeLook = __instance._shipController != null && __instance._shipController.AllowFreeLook() && OWInput.IsPressed(InputLibrary.freeLook, 0f);
         bool inputMode = OWInput.IsInputMode(InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam | InputMode.PatchingSuit);
-        if (__instance._isSnapping || __instance._isLockedOn || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()) || (!inputMode && !freeLook))
+        if (__instance._isSnapping || __instance._isLockedOn || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()) || !inputMode || freeLook)
             return;
 
         bool inAlarmSequence = Locator.GetAlarmSequenceController() != null && Locator.GetAlarmSequenceController().IsAlarmWakingPlayer();
@@ -69,7 +69,7 @@ public class MouseFixPatches {
         __instance._rotationX = Quaternion.AngleAxis(__instance._degreesX, Vector3.up);
         __instance._rotationY = Quaternion.AngleAxis(__instance._degreesY, -Vector3.right);
         Quaternion quaternion;
-        if (freeLook || !Time.inFixedTimeStep)
+        if (freeLook || !Time.inFixedTimeStep || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()))
             quaternion = __instance._rotationX * __instance._rotationY * Quaternion.identity;
         else {
             quaternion = __instance._rotationY * Quaternion.identity;
@@ -95,6 +95,7 @@ public class MouseFixPatches {
         } else {
             __instance._baseAngularVelocity *= 0.995f;
         }
+        Locator.GetPlayerCameraController()._degreesX += __instance._baseAngularVelocity * 180f / 3.1415927f * Time.fixedDeltaTime;
         return false;
     }
 
