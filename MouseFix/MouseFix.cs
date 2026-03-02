@@ -96,11 +96,7 @@ public class MouseFixPatches {
         } else {
             __instance._baseAngularVelocity *= 0.995f;
         }
-        PlayerCameraController camera = Locator.GetPlayerCameraController();
-        bool freeLook = camera._shipController != null && camera._shipController.AllowFreeLook() && OWInput.IsPressed(InputLibrary.freeLook, 0f);
-        bool inputMode = OWInput.IsInputMode(InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam | InputMode.PatchingSuit);
-        if (!freeLook && !camera._isSnapping && !camera._isLockedOn && !(PlayerState.InZeroG() && !PlayerState.IsWearingSuit()) && inputMode)
-            Locator.GetPlayerCameraController()._degreesX += __instance._baseAngularVelocity * 180f / 3.1415927f * Time.fixedDeltaTime;
+        __instance.transform.rotation *= Quaternion.AngleAxis(__instance._baseAngularVelocity * 180f / 3.1415927f * Time.fixedDeltaTime, __instance.transform.up);
         return false;
     }
 
