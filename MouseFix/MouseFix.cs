@@ -4,6 +4,7 @@ using OWML.ModHelper;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using static UnityEngine.EventSystems.StandaloneInputModule;
 
 namespace MouseFix;
 
@@ -38,7 +39,7 @@ public class MouseFixPatches {
         // same as vanilla UpdateInput code but this time we're doing degreesX all da time
         bool freeLook = __instance._shipController != null && __instance._shipController.AllowFreeLook() && OWInput.IsPressed(InputLibrary.freeLook, 0f);
         bool inputMode = OWInput.IsInputMode(InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam | InputMode.PatchingSuit);
-        if (__instance._isSnapping || __instance._isLockedOn || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()) || !inputMode || freeLook)
+        if (freeLook || __instance._isSnapping || __instance._isLockedOn || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()) || !inputMode)
             return;
 
         bool inAlarmSequence = Locator.GetAlarmSequenceController() != null && Locator.GetAlarmSequenceController().IsAlarmWakingPlayer();
@@ -95,7 +96,11 @@ public class MouseFixPatches {
         } else {
             __instance._baseAngularVelocity *= 0.995f;
         }
-        Locator.GetPlayerCameraController()._degreesX += __instance._baseAngularVelocity * 180f / 3.1415927f * Time.fixedDeltaTime;
+        PlayerCameraController camera = Locator.GetPlayerCameraController();
+        bool freeLook = camera._shipController != null && camera._shipController.AllowFreeLook() && OWInput.IsPressed(InputLibrary.freeLook, 0f);
+        bool inputMode = OWInput.IsInputMode(InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam | InputMode.PatchingSuit);
+        if (!freeLook && !camera._isSnapping && !camera._isLockedOn && !(PlayerState.InZeroG() && !PlayerState.IsWearingSuit()) && inputMode)
+            Locator.GetPlayerCameraController()._degreesX += __instance._baseAngularVelocity * 180f / 3.1415927f * Time.fixedDeltaTime;
         return false;
     }
 
