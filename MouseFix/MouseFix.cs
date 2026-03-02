@@ -85,18 +85,22 @@ public class MouseFixPatches {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(PlayerCharacterController), nameof(PlayerCharacterController.UpdateTurning))]
     public static bool PlayerCameraController_UpdateTurning_Prefix(PlayerCharacterController __instance) {
-        float num = __instance._playerCam.fieldOfView / __instance._initFOV;
+        float num = 1f;
+        num *= __instance._playerCam.fieldOfView / __instance._initFOV;
         float num2 = OWInput.GetAxisValue(InputLibrary.look, InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam).x * num;
         __instance._lastTurnInput = num2;
-        bool flag = Locator.GetAlarmSequenceController() != null && Locator.GetAlarmSequenceController().IsAlarmWakingPlayer();
-        if (__instance._isGrounded && __instance._groundBody != null) {
-            Vector3 vector = ((__instance._movingPlatform != null) ? __instance._movingPlatform.GetAngularVelocity() : __instance._groundBody.GetAngularVelocity());
+        if (__instance._isGrounded && __instance._groundBody != null)
+        {
+            Vector3 vector = (__instance._movingPlatform != null) ? __instance._movingPlatform.GetAngularVelocity() : __instance._groundBody.GetAngularVelocity();
             int num4 = (int)Mathf.Sign(Vector3.Dot(vector, __instance._transform.up));
             __instance._baseAngularVelocity = Vector3.Project(vector, __instance._transform.up).magnitude * (float)num4;
-        } else {
+        }
+        else
+        {
             __instance._baseAngularVelocity *= 0.995f;
         }
-        __instance.transform.rotation *= Quaternion.AngleAxis(__instance._baseAngularVelocity * 180f / 3.1415927f * Time.fixedDeltaTime, __instance.transform.up);
+        Quaternion rhs = Quaternion.AngleAxis(__instance._baseAngularVelocity * 180f / 3.1415927f * Time.fixedDeltaTime, __instance._transform.up);
+        __instance._transform.rotation = rhs * __instance._transform.rotation;
         return false;
     }
 
