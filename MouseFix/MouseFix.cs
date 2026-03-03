@@ -2,9 +2,7 @@
 using OWML.Common;
 using OWML.ModHelper;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using static UnityEngine.EventSystems.StandaloneInputModule;
 
 namespace MouseFix;
 
