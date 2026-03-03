@@ -87,14 +87,11 @@ public class MouseFixPatches {
         num *= __instance._playerCam.fieldOfView / __instance._initFOV;
         float num2 = OWInput.GetAxisValue(InputLibrary.look, InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam).x * num;
         __instance._lastTurnInput = num2;
-        if (__instance._isGrounded && __instance._groundBody != null)
-        {
+        if (__instance._isGrounded && __instance._groundBody != null) {
             Vector3 vector = (__instance._movingPlatform != null) ? __instance._movingPlatform.GetAngularVelocity() : __instance._groundBody.GetAngularVelocity();
             int num4 = (int)Mathf.Sign(Vector3.Dot(vector, __instance._transform.up));
             __instance._baseAngularVelocity = Vector3.Project(vector, __instance._transform.up).magnitude * (float)num4;
-        }
-        else
-        {
+        } else {
             __instance._baseAngularVelocity *= 0.995f;
         }
         Quaternion rhs = Quaternion.AngleAxis(__instance._baseAngularVelocity * 180f / 3.1415927f * Time.fixedDeltaTime, __instance._transform.up);
