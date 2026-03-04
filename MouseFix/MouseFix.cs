@@ -36,12 +36,12 @@ public class MouseFixPatches {
         // same as vanilla UpdateInput code but this time we're doing degreesX all da time
         bool freeLook = __instance._shipController != null && __instance._shipController.AllowFreeLook() && OWInput.IsPressed(InputLibrary.freeLook, 0f);
         bool inputMode = OWInput.IsInputMode(InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam | InputMode.PatchingSuit);
-        if (freeLook || __instance._isSnapping || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()) || !inputMode)
+        if (__instance._isSnapping || __instance._isLockedOn || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()) || (!freeLook && !inputMode))
             return;
 
-        bool inAlarmSequence = Locator.GetAlarmSequenceController() != null && Locator.GetAlarmSequenceController().IsAlarmWakingPlayer();
+        bool isAlarmWakingPlayer = Locator.GetAlarmSequenceController() != null && Locator.GetAlarmSequenceController().IsAlarmWakingPlayer();
         Vector2 vector = Vector2.one;
-        vector *= ((__instance._zoomed || inAlarmSequence) ? PlayerCameraController.ZOOM_SCALAR : 1f);
+        vector *= ((__instance._zoomed || isAlarmWakingPlayer) ? PlayerCameraController.ZOOM_SCALAR : 1f);
         vector *= __instance._playerCamera.fieldOfView / __instance._initFOV;
         if (Time.timeScale > 1f)
             vector /= Time.timeScale;
@@ -53,9 +53,9 @@ public class MouseFixPatches {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(PlayerCameraController), nameof(PlayerCameraController.UpdateRotation))]
     public static bool PlayerCameraController_UpdateRotation_Prefix(PlayerCameraController __instance) {
-        bool freeLook = __instance._shipController != null && __instance._shipController.AllowFreeLook() && OWInput.IsPressed(InputLibrary.freeLook, 0f);
         __instance._degreesX %= 360f;
         __instance._degreesY %= 360f;
+        bool freeLook = __instance._shipController != null && __instance._shipController.AllowFreeLook() && OWInput.IsPressed(InputLibrary.freeLook, 0f);
         if (!__instance._isSnapping) {
             if (freeLook) {
                 __instance._degreesX = Mathf.Clamp(__instance._degreesX, -60f, 60f);
@@ -64,16 +64,14 @@ public class MouseFixPatches {
                 __instance._degreesY = Mathf.Clamp(__instance._degreesY, -89.999f, 89.999f);
             }
         }
-        if (__instance._isLockedOn)
-            __instance._degreesX = 0f;
         __instance._rotationX = Quaternion.AngleAxis(__instance._degreesX, Vector3.up);
         __instance._rotationY = Quaternion.AngleAxis(__instance._degreesY, -Vector3.right);
         Quaternion quaternion;
-        if (freeLook || __instance._isSnapping || !Time.inFixedTimeStep || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()))
+        PlayerCharacterController character = __instance._characterController;
+        if (freeLook || !Time.inFixedTimeStep || character._isTurningLocked || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()))
             quaternion = __instance._rotationX * __instance._rotationY * Quaternion.identity;
         else {
             quaternion = __instance._rotationY * Quaternion.identity;
-            PlayerCharacterController character = __instance._characterController;
             character.transform.rotation = Quaternion.AngleAxis(__instance._degreesX, character.transform.up) * character.transform.rotation;
             __instance._degreesX = 0.0f;
         }
