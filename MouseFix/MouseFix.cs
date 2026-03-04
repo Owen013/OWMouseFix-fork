@@ -71,7 +71,7 @@ public class MouseFixPatches {
         }
         __instance._rotationX = Quaternion.AngleAxis(__instance._degreesX, Vector3.up);
         __instance._rotationY = Quaternion.AngleAxis(__instance._degreesY, -Vector3.right);
-        var quaternion = __instance._rotationX * __instance._rotationY * Quaternion.identity;
+        Quaternion quaternion = __instance._rotationX * __instance._rotationY * Quaternion.identity;
         __instance._playerCamera.transform.localRotation = quaternion;
         return false;
     }
