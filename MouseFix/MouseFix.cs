@@ -30,14 +30,13 @@ public class MouseFixPatches {
         return false;
     }
 
-
     [HarmonyPostfix]
     [HarmonyPatch(typeof(PlayerCameraController), nameof(PlayerCameraController.UpdateInput))]
     public static void PlayerCameraController_UpdateInput_Postfix(PlayerCameraController __instance, float deltaTime) {
         // same as vanilla UpdateInput code but this time we're doing degreesX all da time
         bool freeLook = __instance._shipController != null && __instance._shipController.AllowFreeLook() && OWInput.IsPressed(InputLibrary.freeLook, 0f);
         bool inputMode = OWInput.IsInputMode(InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam | InputMode.PatchingSuit);
-        if (freeLook || __instance._isSnapping || __instance._isLockedOn || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()) || !inputMode)
+        if (freeLook || __instance._isSnapping || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()) || !inputMode)
             return;
 
         bool inAlarmSequence = Locator.GetAlarmSequenceController() != null && Locator.GetAlarmSequenceController().IsAlarmWakingPlayer();
@@ -65,10 +64,12 @@ public class MouseFixPatches {
                 __instance._degreesY = Mathf.Clamp(__instance._degreesY, -89.999f, 89.999f);
             }
         }
+        if (__instance._isLockedOn)
+            __instance._degreesX = 0f;
         __instance._rotationX = Quaternion.AngleAxis(__instance._degreesX, Vector3.up);
         __instance._rotationY = Quaternion.AngleAxis(__instance._degreesY, -Vector3.right);
         Quaternion quaternion;
-        if (freeLook || __instance._isSnapping || __instance._isLockedOn || !Time.inFixedTimeStep || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()))
+        if (freeLook || __instance._isSnapping || !Time.inFixedTimeStep || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()))
             quaternion = __instance._rotationX * __instance._rotationY * Quaternion.identity;
         else {
             quaternion = __instance._rotationY * Quaternion.identity;
