@@ -36,7 +36,7 @@ public class MouseFixPatches {
         // same as vanilla UpdateInput code but this time we're doing degreesX all da time
         bool freeLook = __instance._shipController != null && __instance._shipController.AllowFreeLook() && OWInput.IsPressed(InputLibrary.freeLook, 0f);
         bool inputMode = OWInput.IsInputMode(InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam | InputMode.PatchingSuit);
-        if (__instance._isSnapping || __instance._isLockedOn || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()) || (!freeLook && !inputMode))
+        if (freeLook || __instance._isSnapping || __instance._isLockedOn || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()) || !inputMode)
             return;
 
         bool isAlarmWakingPlayer = Locator.GetAlarmSequenceController() != null && Locator.GetAlarmSequenceController().IsAlarmWakingPlayer();
@@ -64,17 +64,14 @@ public class MouseFixPatches {
                 __instance._degreesY = Mathf.Clamp(__instance._degreesY, -89.999f, 89.999f);
             }
         }
+        PlayerCharacterController character = __instance._characterController;
+        if (Time.inFixedTimeStep && !freeLook && !character._isTurningLocked && !(PlayerState.InZeroG() && PlayerState.IsWearingSuit())) {
+            character.transform.rotation = Quaternion.AngleAxis(__instance._degreesX, character.transform.up) * character.transform.rotation;
+            __instance._degreesX = 0f;
+        }
         __instance._rotationX = Quaternion.AngleAxis(__instance._degreesX, Vector3.up);
         __instance._rotationY = Quaternion.AngleAxis(__instance._degreesY, -Vector3.right);
-        Quaternion quaternion;
-        PlayerCharacterController character = __instance._characterController;
-        if (freeLook || !Time.inFixedTimeStep || character._isTurningLocked || (PlayerState.InZeroG() && PlayerState.IsWearingSuit()))
-            quaternion = __instance._rotationX * __instance._rotationY * Quaternion.identity;
-        else {
-            quaternion = __instance._rotationY * Quaternion.identity;
-            character.transform.rotation = Quaternion.AngleAxis(__instance._degreesX, character.transform.up) * character.transform.rotation;
-            __instance._degreesX = 0.0f;
-        }
+        var quaternion = __instance._rotationX * __instance._rotationY * Quaternion.identity;
         __instance._playerCamera.transform.localRotation = quaternion;
         return false;
     }
@@ -82,8 +79,7 @@ public class MouseFixPatches {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(PlayerCharacterController), nameof(PlayerCharacterController.UpdateTurning))]
     public static bool PlayerCharacterController_UpdateTurning_Prefix(PlayerCharacterController __instance) {
-        float num = 1f;
-        num *= __instance._playerCam.fieldOfView / __instance._initFOV;
+        float num = __instance._playerCam.fieldOfView / __instance._initFOV;
         float num2 = OWInput.GetAxisValue(InputLibrary.look, InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam).x * num;
         __instance._lastTurnInput = num2;
         if (__instance._isGrounded && __instance._groundBody != null) {
