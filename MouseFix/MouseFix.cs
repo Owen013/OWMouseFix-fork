@@ -82,7 +82,7 @@ public class MouseFixPatches {
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(PlayerCharacterController), nameof(PlayerCharacterController.UpdateTurning))]
-    public static bool PlayerCameraController_UpdateTurning_Prefix(PlayerCharacterController __instance) {
+    public static bool PlayerCharacterController_UpdateTurning_Prefix(PlayerCharacterController __instance) {
         float num = 1f;
         num *= __instance._playerCam.fieldOfView / __instance._initFOV;
         float num2 = OWInput.GetAxisValue(InputLibrary.look, InputMode.Character | InputMode.ScopeZoom | InputMode.NomaiRemoteCam).x * num;
