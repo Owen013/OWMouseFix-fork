@@ -65,7 +65,7 @@ public class MouseFixPatches {
             }
         }
         PlayerCharacterController character = __instance._characterController;
-        if (Time.inFixedTimeStep && !freeLook && !character._isTurningLocked && !(PlayerState.InZeroG() && PlayerState.IsWearingSuit())) {
+        if (Time.inFixedTimeStep && !freeLook && !(PlayerState.InZeroG() && PlayerState.IsWearingSuit())) {
             character.transform.rotation = Quaternion.AngleAxis(__instance._degreesX, character.transform.up) * character.transform.rotation;
             __instance._degreesX = 0f;
         }
